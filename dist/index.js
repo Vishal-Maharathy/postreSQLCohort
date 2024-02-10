@@ -9,59 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
 // Async function to insert data into a table
-const client = new pg_1.Client({
-    connectionString: "postgresql://Vishal-Maharathy:FmND6pBqz7OE@ep-frosty-limit-a5cnz0na.us-east-2.aws.neon.tech/test1?sslmode=require"
-});
-function connectToDB() {
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
+function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield client.connect();
-            console.log("Connected to DB");
-        }
-        catch (err) {
-            console.error(err);
-        }
+        // ... you will write your Prisma Client queries here
+        const newLink = yield prisma.user.create({
+            data: {
+                name: "Vishal Maharathy",
+                email: "vishalmaharathy76@gmail.com",
+                password: "password1"
+            },
+        });
+        const allLinks = yield prisma.user.findMany();
+        console.log(allLinks);
     });
 }
-connectToDB();
-function createUserTable() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            let table = yield client.query(`
-            CREATE TABLE users (
-                id serial PRIMARY KEY,
-                name text,
-                email text UNIQUE NOT NULL,
-                password text
-            )
-        `);
-        }
-        catch (e) {
-            console.error(e);
-        }
-    });
-}
-// createUserTable().catch(e => console.error(e.stack))
-function insertData() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let data = yield client.query(`
-        INSERT INTO users (name, email, password)
-        VALUES ('Vishal', 'vishalmaharathy78@gmail.com', 'password')`);
-        if (data) {
-            console.log("Data inserted");
-        }
-        else {
-            console.error("Data not inserted");
-        }
-    });
-}
-// insertData()
-function readData() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let data = yield client.query('SELECT * FROM users');
-        console.error(data.rows);
-    });
-}
-readData();
+main()
+    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma.$disconnect();
+}))
+    .catch((e) => __awaiter(void 0, void 0, void 0, function* () {
+    console.error(e);
+    yield prisma.$disconnect();
+    process.exit(1);
+}));
